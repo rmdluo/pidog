@@ -41,7 +41,7 @@ def be_picked_up():
                 downflag = False
                 stand()
 
-        if ax > -13000: # if up, acceleration is the opposite of gravity, ax will > -1G
+        if ax > -16000: # if up, acceleration is the opposite of gravity, ax will > -1G
             my_dog.body_stop()
             if upflag == True:
                 isUp = True
