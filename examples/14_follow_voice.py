@@ -33,40 +33,40 @@ def face_track():
         # If heard somthing, turn to face it
         if my_dog.ears.isdetected():
             flag = False
-            direction = my_dog.ears.read()
-            if direction > 0 and direction < 160:
-                yaw = -direction
-                if yaw < -80:
-                    yaw = -80
-            elif direction > 200 and direction < 360:
-                yaw = 360 - direction
-                if yaw > 80:
-                    yaw = 80
-            my_dog.head_move([[yaw, 0, 0]], pitch_comp=-40, immediately=True, speed=80)
-            my_dog.wait_head_done()
-            sleep(0.05)
+            read_direction = my_dog.ears.read()
+            for direction in range(read_direction - 20, read_direction + 20 + 1, 20):
+                if direction > 0 and direction < 160:
+                    yaw = -direction
+                    if yaw < -80:
+                        yaw = -80
+                elif direction > 200 and direction < 360:
+                    yaw = 360 - direction
+                    if yaw > 80:
+                        yaw = 80
+                my_dog.head_move([[yaw, 0, 0]], pitch_comp=-40, immediately=True, speed=80)
+                my_dog.wait_head_done()
+                sleep(0.05)
 
-            ex = Vilib.detect_obj_parameter['human_x'] - 320
-            ey = Vilib.detect_obj_parameter['human_y'] - 240
-            people = Vilib.detect_obj_parameter['human_n']
+                ex = Vilib.detect_obj_parameter['human_x'] - 320
+                ey = Vilib.detect_obj_parameter['human_y'] - 240
+                people = Vilib.detect_obj_parameter['human_n']
 
-            if people == 0:
-                pitch_updates = [i for i in range(80, -40, -10)]
-                # move head from up to down, looking for person
-                for new_pitch in pitch_updates:
-                    my_dog.head_move([[yaw, 0, new_pitch]], pitch_comp=-40, immediately=False, speed=50)
-                    my_dog.wait_head_done()
+                if people == 0:
+                    pitch_updates = [i for i in range(80, -40, -10)]
+                    # move head from up to down, looking for person
+                    for new_pitch in pitch_updates:
+                        my_dog.head_move([[yaw, 0, new_pitch]], pitch_comp=-40, immediately=False, speed=50)
+                        my_dog.wait_head_done()
 
-                    sleep(0.05)
+                        sleep(0.05)
 
-                    ex = Vilib.detect_obj_parameter['human_x'] - 320
-                    ey = Vilib.detect_obj_parameter['human_y'] - 240
-                    people = Vilib.detect_obj_parameter['human_n']
+                        ex = Vilib.detect_obj_parameter['human_x'] - 320
+                        ey = Vilib.detect_obj_parameter['human_y'] - 240
+                        people = Vilib.detect_obj_parameter['human_n']
 
-                    if people > 0:
-                        pitch = new_pitch
-                        break
-
+                        if people > 0:
+                            pitch = new_pitch
+                            break
         else:
             ex = Vilib.detect_obj_parameter['human_x'] - 320
             ey = Vilib.detect_obj_parameter['human_y'] - 240
@@ -77,6 +77,8 @@ def face_track():
             flag = True
             my_dog.do_action('wag_tail', step_count=2, speed=100)
             bark(my_dog, [yaw, 0, pitch], pitch_comp=-40, volume=80)
+            my_dog.do_action('stand', step_count=1, speed=70)
+            my_dog.wait_all_done()
             if my_dog.ears.isdetected():
                 direction = my_dog.ears.read()
 
@@ -88,7 +90,7 @@ def face_track():
 
         if ey > 25:
             pitch -= 1*int(ey/50+0.5)
-            if pitch < - 30:
+            if pitch < -30:
                 pitch = -30
         elif ey < -25:
             pitch += 1*int(-ey/50+0.5)
